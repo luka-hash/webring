@@ -10,9 +10,7 @@ Build it with `go build`. You also need a few more files:
 - members file = csv with (name, url) pair
 - some icons and other visuals = icons, badges, etc
 
-Take a look at the `example` directory.
-
-The server uses port `8080`.
+The server uses port `8080` by default.
 
 ## Is it any good?
 
@@ -20,7 +18,9 @@ Yes.
 
 ## TODO
 
-- [x] done
+- [ ] member validator
+  - [ ] at startup time
+  - [ ] at runtime (per request), i.e. don't redirect to 404s
 
 ## Licence
 

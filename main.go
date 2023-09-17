@@ -158,6 +158,9 @@ func main() {
 
 	router := mux.NewRouter()
 	static := http.FileServer(http.Dir(*staticDir))
+	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		index(w, r, webring)
+	})
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", static))
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		index(w, r, webring)
