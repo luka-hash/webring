@@ -1,4 +1,4 @@
-# Place in /etc/systemd/systemd/
+# Place in /etc/systemd/system/
 # Run and enable with:
 # # systemctl daemon-reload
 # # systemctl start webring.service
