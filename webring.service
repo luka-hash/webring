@@ -1,18 +1,19 @@
+# Place in /etc/systemd/user/
+# Run with:
+# $ systemctl --user start webring.service
+
 [Unit]
-Description=webring server
+Description=webring server (github.com/luka-hash/webring.git)
 ConditionPathExists=/home/webring/webring/webring
 After=network.target
 
 [Service]
 Type=simple
-User=webring
-LimitNOFILE=8
-
 Restart=on-failure
 RestartSec=5
-
 WorkingDirectory=/home/webring/webring
-ExecStart=/home/webring/webring/webring -static=static/ -members=members.csv -index=index.html > webring.log 2>&1
+ExecStart=/home/webring/webring/webring -static=static/ -members=members.csv -index=index.html
+StandardOutput=file:/home/webring/webring/webring.log
 
 [Install]
 WantedBy=multi-user.target

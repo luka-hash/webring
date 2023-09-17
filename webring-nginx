@@ -1,0 +1,14 @@
+// place in /etc/nginx/sites-available/webring
+// later symlink it to /etc/nginx/sites-enabled/webring
+
+server {
+	server_name webring.ljudi.org ;
+	location / {
+		proxy_pass http://localhost:8080 ;
+	}
+}
+
+// run 
+// # systemctl reload nginx
+// and
+// # certbot --nginx
