@@ -1,6 +1,8 @@
-# Place in /etc/systemd/user/
-# Run with:
-# $ systemctl --user start webring.service
+# Place in /etc/systemd/systemd/
+# Run and enable with:
+# # systemctl daemon-reload
+# # systemctl start webring.service
+# # systemctl enable webring.service
 
 [Unit]
 Description=webring server (github.com/luka-hash/webring.git)
@@ -9,6 +11,8 @@ After=network.target
 
 [Service]
 Type=simple
+User=webring
+Group=webring
 Restart=on-failure
 RestartSec=5
 WorkingDirectory=/home/webring/webring
