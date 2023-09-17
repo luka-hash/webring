@@ -12,7 +12,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"net/url"
 	"os"
 
 	"github.com/gorilla/mux"
@@ -24,10 +23,9 @@ type Member struct {
 }
 
 type Webring struct {
-	membersFile string
-	Members     []Member
-	Index       *template.Template
-	Static      string
+	Members    []Member
+	MembersMap map[string]int
+	Index      *template.Template
 }
 
 func isAlive(url string) bool {
@@ -49,6 +47,7 @@ func readMembers(filename string) ([]Member, error) {
 	defer file.Close()
 	r := csv.NewReader(file)
 	r.TrimLeadingSpace = true
+	r.Comment = '#'
 	_, err = r.Read() // skip header
 	if err == io.EOF {
 		return nil, nil
@@ -63,7 +62,7 @@ func readMembers(filename string) ([]Member, error) {
 			break
 		}
 		if err != nil {
-			return result, err
+			return nil, err
 		}
 		result = append(result, Member{
 			Name: record[0],
@@ -82,48 +81,36 @@ func index(w http.ResponseWriter, r *http.Request, webring *Webring) {
 }
 
 func next(w http.ResponseWriter, r *http.Request, webring *Webring) {
-	referrer, err := getReferrer(r)
-	if err != nil {
+	member := r.URL.Query().Get("member")
+	if member == "" {
 		random(w, r, webring)
 		return
 	}
-	for i, member := range webring.Members {
-		if member.URL == referrer {
-			http.Redirect(w, r, webring.Members[modulo(i+1, len(webring.Members))].URL, http.StatusFound)
-			return
-		}
+	memberIndex, ok := webring.MembersMap[member]
+	if !ok {
+		random(w, r, webring)
+		return
 	}
-	// if the referrer is not in the members list, just redirect to random member
-	random(w, r, webring)
+	// TODO: Maybe check if the next member is OK before redirecting
+	http.Redirect(w, r, webring.Members[modulo(memberIndex+1, len(webring.Members))].URL, http.StatusFound)
 }
 
 func previous(w http.ResponseWriter, r *http.Request, webring *Webring) {
-	referrer, err := getReferrer(r)
-	if err != nil {
+	member := r.URL.Query().Get("member")
+	if member == "" {
 		random(w, r, webring)
 		return
 	}
-	for i, member := range webring.Members {
-		if member.URL == referrer {
-			http.Redirect(w, r, webring.Members[modulo(i-1, len(webring.Members))].URL, http.StatusFound)
-			return
-		}
+	memberIndex, ok := webring.MembersMap[member]
+	if !ok {
+		random(w, r, webring)
+		return
 	}
-	// if the referrer is not in the members list, just redirect to random member
-	random(w, r, webring)
+	http.Redirect(w, r, webring.Members[modulo(memberIndex-1, len(webring.Members))].URL, http.StatusFound)
 }
 
 func random(w http.ResponseWriter, r *http.Request, webring *Webring) {
 	http.Redirect(w, r, webring.Members[rand.Intn(len(webring.Members))].URL, http.StatusFound)
-}
-
-func getReferrer(r *http.Request) (string, error) {
-	referrerRaw := r.Referer()
-	referrerURL, err := url.Parse(referrerRaw)
-	if err != nil {
-		return "", err
-	}
-	return (referrerURL.Scheme + "://" + referrerURL.Host), nil
 }
 
 func main() {
@@ -137,11 +124,14 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Members:", len(members))
+	if len(members) < 2 {
+		panic("Cannot create a ring with less than 2 members")
+	}
 	fmt.Println("Checking for problems with members...")
 	problematic := 0
 	for _, member := range members {
 		if !isAlive(member.URL) {
-			fmt.Println("There is a possible problem with:", member.Name, member.URL)
+			fmt.Println("There is a possible problem with:", member.URL)
 			problematic += 1
 		}
 	}
@@ -152,13 +142,18 @@ func main() {
 			fmt.Println("Aborting due the insufficient number of healthy members in the webring.")
 		}
 	}
+	membersMap := make(map[string]int)
+	for i, member := range members {
+		membersMap[member.URL] = i
+	}
 	tmpl, err := template.ParseFiles(*indexFile)
 	if err != nil {
 		panic(err)
 	}
 	webring := &Webring{
-		Members: members,
-		Index:   tmpl,
+		Members:    members,
+		MembersMap: membersMap,
+		Index:      tmpl,
 	}
 
 	router := mux.NewRouter()

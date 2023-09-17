@@ -1,6 +1,6 @@
-Hiii (｡◕‿‿◕｡)
+People's Webring.
 
-Welcome to _Webring._
+Welcome!
 
 This webring has the goal of sharing traffic between its members and growing
 the surrounding network. We welcome websites, wikis, portfolios, and similar

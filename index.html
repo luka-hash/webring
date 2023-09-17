@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico">
+  <title>Webring</title>
+  <style type="text/css">
+    :root {
+      --background-color: #fff;
+      --text-color: #181715;
+      --secondary-color: #0df;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background-color: #181715;
+        --text-color: #fff;
+      }
+      #icon {
+        filter: invert(100%);
+      }
+    }
+    body {
+      font-family: sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      margin: 0 auto;
+      padding: 1rem;
+      max-width: 920px;
+      line-height: 1.5;
+    }
+    ::selection {
+      background: var(--secondary-color);
+      color: #181715;
+    }
+    #members {
+      padding: 2rem;
+      column-count: 3;
+    }
+    a, a:visited, a:active {
+      color: inherit !important;
+      text-decoration: none;
+    }
+    #members a:hover {
+      background-color: var(--secondary-color);
+      color: var(--background-color) !important;
+      text-decoration: underline;
+    }
+    #members a::before {
+      content: '{ ';
+    }
+    #members a::after {
+      content: ' }';
+    }
+    li::marker {
+      font-weight: 700;
+    }
+    #webring {
+      text-decoration: underline;
+      display: flex;
+      justify-content: space-around;
+    }
+    #webring a::before {
+      content: '[ ';
+    }
+    #webring a::after {
+      content: ' ]';
+    }
+    @media screen and (max-width: 800px) {
+      #members {
+        column-count: 2;
+      }
+      #webring {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+    @media screen and (max-width: 600px) {
+      #members {
+        column-count: 1;
+      }
+    }
+    pre {
+      border: 1px dashed var(--text-color);
+      padding: .8rem;
+      max-width: fit-content;
+      overflow-x: auto;
+    }
+    #plug {
+      text-decoration: underline;
+    }
+    #main, #members {
+      border-bottom: 1px solid var(--text-color);
+    }
+  </style>
+</head>
+<body>
+    <div id="main">
+      <h1>Welcome</h1>
+      <p>
+        This <a href="https://en.wikipedia.org/wiki/Webring">webring</a> has the goal of sharing traffic between its members and growing the surrounding network. We welcome websites, wikis, portfolios, and similar spaces created by humans and intended for human consumption.
+      </p>
+      <p>
+        We are very welcoming, but we do draw a line at some things:
+      </p>
+      <ul>
+        <li>
+          Hate speech of any kind, including but not limited to sexism, homophobia, racism, ableism, antisemitism, etc.
+        </li>
+        <li>
+          Harassment, doxxing, trolling, scamming, spamming, or other similar kinds of behaviour.
+        </li>
+        <li>
+          Advertisement-focused sites are not welcome.
+        </li>
+      </ul>
+      <p>
+        In the absence of explicit instructions, we expect all members to uphold conventional norms of appropriate behavior and communication. Thanks :)
+      </p>
+      <p>Rules for joining:</p>
+      <ol>
+        <li>Create a website and add some content to it.</li>
+        <li>
+          Add the following links to your website (we leave it up to you to choose the exact links and where to place them):
+        </li>
+          <pre>&lt;a href="https://webring.ljudi.org/previous?member=YOURDOMAIN">Previous&lt;/a>
+&lt;a href="https://webring.ljudi.org/im-feeling-lucky">I'm feeling lucky!&lt;/a>
+&lt;a href="https://webring.ljudi.org/next?member=YOURDOMAIN">Next&lt;/a>
+&lt;a href="https://webring.ljudi.org/">Webring home&lt;/a></pre>
+            Or, if you don't have a place for all those links, just add the webring's icon or one of the badges:
+          </br>
+          <a href="/">
+            <img id="icon" src="/static/webring-light.svg" alt="webring icon light">
+          </a>
+          <a href="/">
+            <img src="/static/webring-badge-blue.png" alt="webring badge blue">
+          </a>
+          <a href="/">
+            <img src="/static/webring-badge.png" alt="webring badge rainbow">
+          </a>
+        <li>Send en email to the webring <a href="mailto:">admin</a>, and introduce yourself :)</li>
+      </ol>
+      <p>
+        In you have any questions about the guidelines, rules or anything else, or you want to report abuse, do not hesitate and contact the <a href="mailto:">admin</a>.
+      </p>
+      <p>
+        If you want to host your own webring - use <a id="plug" href="https://github.com/luka-hash/webring">luka-hash/webring</a>. <3
+      </p>
+      <p>
+        Enjoy!
+      </p>
+    </div>
+    <div>
+      <h3>Our members:</h3>
+      <ol id="members">
+        {{- range .Members }}
+        <li> <a href="{{ .URL }}">{{ .Name }}</a></li>
+        {{- end }}        
+      </ol>
+    </div>
+    <div id="webring">
+      <a href="/im-feeling-lucky">I'm feeling lucky!</a>
+    </div>
+</body>
+</html>
