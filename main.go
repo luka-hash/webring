@@ -13,6 +13,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -86,6 +87,9 @@ func next(w http.ResponseWriter, r *http.Request, webring *Webring) {
 		random(w, r, webring)
 		return
 	}
+	if !strings.HasPrefix(member, "https://") {
+		member = "https://"+member
+	}
 	memberIndex, ok := webring.MembersMap[member]
 	if !ok {
 		random(w, r, webring)
@@ -100,6 +104,9 @@ func previous(w http.ResponseWriter, r *http.Request, webring *Webring) {
 	if member == "" {
 		random(w, r, webring)
 		return
+	}
+	if !strings.HasPrefix(member, "https://") {
+		member = "https://"+member
 	}
 	memberIndex, ok := webring.MembersMap[member]
 	if !ok {
@@ -175,7 +182,7 @@ func main() {
 		random(w, r, webring)
 	}).Methods("GET")
 
-	if err := http.ListenAndServe(":8080", router); err != nil {
+	if err := http.ListenAndServe(":5852", router); err != nil {
 		log.Fatalln(err)
 	}
 }
